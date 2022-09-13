@@ -85,7 +85,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 */
 //const PORT = process.env || 8080
 
-const server = app.listen(9000, () => {
+const server = app.listen(80, () => {
     console.log("Listening on port: " + 9000);
     databaseConnection.connectionToDatabase();
 });
