@@ -1,4 +1,6 @@
 npm i npm i -S body-parser mysql express cors multer sharp
+npm install nodemon -g
+
 
 NSHTTPURLResponse: 0x6000035a5980> { URL:  } { Status Code: 400, Headers {
     Connection =     (

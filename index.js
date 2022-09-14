@@ -140,7 +140,7 @@ io.sockets.on('connection', function (socket) {
                 return -1
             }
             let number = JSON.stringify(result[0].total_prompts)
-            totalPrompts = number
+            totalPrompts = result[0].total_prompts
             return number
         });
         let queryOrder = "SELECT idPrompt,type FROM Paika.Order WHERE idInteraction = " + data + " AND turn = 0";
@@ -149,11 +149,12 @@ io.sockets.on('connection', function (socket) {
                 return 0
             }
 
-            io.sockets.to(data).emit('type', { type: result[0].type });
+            
             console.log("tipo prompt")
             console.log(result[0].type)
             io.sockets.to(data).emit('turn', turnIndex);
             io.sockets.to(data).emit('totalPrompts', totalPrompts);
+            io.sockets.to(data).emit('type', { type: result[0].type });
             switch (result[0].type) {
                 case "TextOnly":
                     let queryPromptTextOnly = "SELECT id,text,img,time FROM " + result[0].type + " WHERE idInteraction = " + data + " AND turn = 0";
@@ -208,9 +209,6 @@ io.sockets.on('connection', function (socket) {
         var countdown = setInterval(function () {
 
             counter--;
-            if (counter == -5) {
-                finishInteraction = true
-            }
 
             console.log(counter)
             io.sockets.to(data).emit('timer', { timer: counter + 1 })
@@ -218,9 +216,12 @@ io.sockets.on('connection', function (socket) {
 
             if (counter == 0) {
                 if (turnIndex == totalPrompts) {
-                    finishInteraction = true
-                }
-                console.log("turno Actual vs Total: " + turnIndex + " : " + totalPrompts);
+                    clearInterval(countdown)
+                    io.sockets.to(data).emit('finish', { finish: 1 })
+                    io.sockets.to(data).emit('text', { text: "Winner is " })
+                    console.log("Finish")
+                } else {
+                    console.log("turno Actual vs Total: " + turnIndex + " : " + totalPrompts);
                 i++;
                 console.log("i: " + i)
                 let queryOrder = "SELECT idPrompt,type FROM Paika.Order WHERE idInteraction = " + data + " AND turn = " + turnIndex;
@@ -232,14 +233,11 @@ io.sockets.on('connection', function (socket) {
                     console.log("tipo prompt")
                     console.log(result[0].type)
 
-                    if (result[0].type == null) {
-                        finishInteraction = true
-                    }
-                    else {
-                        io.sockets.to(data).emit('type', { type: result[0].type });
+                        
 
                         io.sockets.to(data).emit('turn', turnIndex);
                         io.sockets.to(data).emit('totalPrompts', totalPrompts);
+                        io.sockets.to(data).emit('type', { type: result[0].type });
                         switch (result[0].type) {
                             case "TextOnly":
                                 let queryPromptTextOnly = "SELECT id,text,img,time FROM TextOnly WHERE idInteraction = " + data + " AND turn = " + turnIndex;
@@ -289,19 +287,14 @@ io.sockets.on('connection', function (socket) {
                             default:
                             // code default
                         }
-                    }
-
-                    
-                    
-
-
                 });
+                }
+                
 
                 if (finishInteraction) {
                     clearInterval(countdown)
                     io.sockets.to(data).emit('finish', { finish: 1 })
-                    io.sockets.to(data).emit('text', { text: "Winner is " })
-                    console.log("Finish")
+                    
                 }
 
             }
