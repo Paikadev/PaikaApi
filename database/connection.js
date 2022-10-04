@@ -5,6 +5,7 @@ const connection = mysql.createConnection({
     user: process.env.USER_DATABASE,
     password: process.env.PASSWORD_DATABASE,
     database: process.env.DATABASE_DATABASE,
+    charset: 'utf8mb4'
 });
 
 function connectionToDatabase(){

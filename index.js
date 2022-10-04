@@ -50,7 +50,7 @@ app.post("/textOnly", (req, res) => {
     TextOnlyController.insert(req, res)
 });
 
-/*
+
 const helperImage = (filePath, fileName, size) => {
     return sharp(filePath)
         .resize(size)
@@ -82,7 +82,7 @@ app.use('/image', express.static(staticRoute));
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-*/
+
 //const PORT = process.env || 8080
 
 const server = app.listen(9000, () => {
@@ -163,7 +163,7 @@ io.sockets.on('connection', function (socket) {
                             return 0
                         }
                         io.sockets.to(data).emit('text', { text: resultP[0].text })
-                        io.sockets.to(data).emit('img', { img: resultP[0].img })
+                        io.sockets.to(data).emit('img',resultP[0].img )
                         counter = resultP[0].time;
                         io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
                     });
@@ -176,7 +176,7 @@ io.sockets.on('connection', function (socket) {
                             return 0
                         }
                         io.sockets.to(data).emit('text', { text: resultP[0].text })
-                        io.sockets.to(data).emit('img', { img: resultP[0].img })
+                        io.sockets.to(data).emit('img', resultP[0].img)
                         counter = resultP[0].time;
                         io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
                     });
@@ -189,7 +189,7 @@ io.sockets.on('connection', function (socket) {
                             return 0
                         }
                         io.sockets.to(data).emit('text', { text: resultP[0].text })
-                        io.sockets.to(data).emit('img', { img: resultP[0].img })
+                        io.sockets.to(data).emit('img', resultP[0].img )
                         counter = resultP[0].time;
                         io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
                         io.sockets.to(data).emit('option_1', { option: resultP[0].option_1 })
@@ -210,7 +210,6 @@ io.sockets.on('connection', function (socket) {
 
             counter--;
 
-            console.log(counter)
             io.sockets.to(data).emit('timer', { timer: counter + 1 })
 
 
@@ -221,7 +220,6 @@ io.sockets.on('connection', function (socket) {
                     io.sockets.to(data).emit('text', { text: "Winner is " })
                     console.log("Finish")
                 } else {
-                    console.log("turno Actual vs Total: " + turnIndex + " : " + totalPrompts);
                 i++;
                 console.log("i: " + i)
                 let queryOrder = "SELECT idPrompt,type FROM Paika.Order WHERE idInteraction = " + data + " AND turn = " + turnIndex;
@@ -230,8 +228,6 @@ io.sockets.on('connection', function (socket) {
                         //finishInteraction = true
                     }
 
-                    console.log("tipo prompt")
-                    console.log(result[0].type)
 
                         
 
