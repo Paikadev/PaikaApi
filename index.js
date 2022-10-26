@@ -120,8 +120,10 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('start', function (data) {
-
-        console.log(data)
+        var started = false
+        if(started == false){
+            started = true
+            console.log(data)
         io.sockets.to(data).emit('start', { start: 1 })
         var i = 0;
         var counter = 0
@@ -131,6 +133,8 @@ io.sockets.on('connection', function (socket) {
         var text = ""
         var img = ""
         var finishInteraction = false
+
+        var waiting = 0
 
 
 
@@ -207,7 +211,9 @@ io.sockets.on('connection', function (socket) {
 
 
         var countdown = setInterval(function () {
-
+            var x = setInterval(function() {
+                io.sockets.to(data).emit('text', { text: "..." })
+            }, 3000);
             counter--;
 
             io.sockets.to(data).emit('timer', { timer: counter + 1 })
@@ -296,6 +302,10 @@ io.sockets.on('connection', function (socket) {
             }
         }, 1000);
         console.log("start")
+        }
+        else{
+            console.log("Ya se ha iniciado la interaccion: " + data)
+        }
     });
 });
 
