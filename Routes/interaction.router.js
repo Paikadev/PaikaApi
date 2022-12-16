@@ -5,6 +5,8 @@ router.get("/", (req,res) => {
     interactionController.read(req,res)
 });
 
+
+
 router.post("/", (req, res) => {
     interactionController.insert(req,res)
 });
@@ -23,6 +25,10 @@ router.put('/updatePoints/:id/:player/:points', function(req, res) {
 
 router.get("/getWinner/:id", function(req, res) {
     interactionController.getWinner(req,res);
+});
+
+router.get("/getWinner/:id", function(req, res) {
+  interactionController.getWinner(req,res);
 });
 
 

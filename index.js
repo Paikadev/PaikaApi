@@ -10,7 +10,7 @@ var routerTextOnly = require("./Routes/textOnly.router");
 var routerVotes = require("./Routes/votes.router");
 var routerMultipleOptions = require("./Routes/multipleOtions.router");
 const bodyParser = require('body-parser');
-
+const dolbyio = require('@dolbyio/dolbyio-rest-apis-client');
 const databaseConnection = require('./database/connection')
 
 var votesController = require('./Controllers/votes.controller')
@@ -32,12 +32,18 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 
 app.get("/", (req, res) => {
-    console.log(req)
     res.send("Paika API v1.0")
+});
+
+app.get("/getAceessToken", (req, res) => {
+    interactionsController.getAceessToken(req,res);
 })
 
 app.post("/interaction", (req, res) => {
     interactionsController.insert(req, res)
+});
+app.get("/interactions", (req, res) => {
+    interactionsController.read(req, res)
 });
 
 app.post("/votes", (req, res) => {
@@ -119,6 +125,12 @@ io.sockets.on('connection', function (socket) {
         io.sockets.to(idRoom).emit('totalUser', { totalUsers: totalUsers });
     });
 
+    socket.on('leave', function (idRoom) {
+        socket.leave(socket.current_room);
+        socket.leave(idRoom);
+        console.log("User leave room")
+    });
+
     socket.on('start', function (data) {
         var started = false
         if(started == false){
@@ -141,7 +153,7 @@ io.sockets.on('connection', function (socket) {
         let query = "SELECT total_prompts FROM Interactions WHERE id = " + data;
         databaseConnection.connection.query(query, function (err, result) {
             if (err) {
-                return -1
+                return 0
             }
             let number = JSON.stringify(result[0].total_prompts)
             totalPrompts = result[0].total_prompts

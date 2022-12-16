@@ -1,6 +1,10 @@
 const mysql = require('mysql')
+const dolbyio = require('@dolbyio/dolbyio-rest-apis-client');
+const databaseConnection = require('../database/connection');
 
-const databaseConnection = require('../database/connection')
+const APP_KEY = 'cCtj_wIfvRnmfeUnDpskxQ==';
+const APP_SECRET = 's-Lo5yY_UXWc4VPVSJz0rooEwI4_AcG7OqDwP3zK7Do=';
+
 
 function insert(req, res){
   console.log(req.body)
@@ -16,7 +20,15 @@ function insert(req, res){
     });
 }
 
-
+async function getAceessToken(req, res){
+  const at = await dolbyio.communications.authentication.getClientAccessToken(APP_KEY, APP_SECRET);
+  if(at.access_token == null || at.access_token == "") { 
+    return res.status(500).json({
+      message: 'Error get Access token'
+    })
+  }
+  return res.json({AccessToken: at.access_token});
+}
 
 
 function read(req,res){
@@ -138,4 +150,4 @@ function MaxPoints(player1,player2,player3,player4, res)
   }
 }
 
-module.exports = {insert, read, readId, updatePoints, getWinner,getTurns}
+module.exports = {insert, read, readId, updatePoints, getWinner,getTurns,getAceessToken}
