@@ -8,7 +8,7 @@ CREATE TABLE `Interactions` (
   `random` int(11) NOT NULL,
   `host_user` varchar(250) NOT NULL,
   `date` varchar(250) NOT NULL,
-  `total_prompts` double NOT NULL,
+  `total_prompts` Int(11) NOT NULL,
   `player1_points` double DEFAULT NULL,
   `player2_points` double DEFAULT NULL,
   `player3_points` double DEFAULT NULL,
