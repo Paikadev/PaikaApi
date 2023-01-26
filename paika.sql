@@ -1,3 +1,6 @@
+CREATE DATABASE Paika
+CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
 use Paika;
 
 CREATE TABLE `Interactions` (
@@ -13,7 +16,7 @@ CREATE TABLE `Interactions` (
   `player2_points` double DEFAULT NULL,
   `player3_points` double DEFAULT NULL,
   `player4_points` double DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -33,7 +36,7 @@ CREATE TABLE `MultipleOptions` (
   `option_4` varchar(250) NOT NULL,
   `option_correct` varchar(250) NOT NULL,
   `time` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 
 CREATE TABLE `Order` (
@@ -41,7 +44,7 @@ CREATE TABLE `Order` (
   `turn` int(11) NOT NULL,
   `type` varchar(250) NOT NULL,
   `idPrompt` varchar(250) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -56,7 +59,7 @@ CREATE TABLE `TextOnly` (
   `text` varchar(250) DEFAULT NULL,
   `img` varchar(250) DEFAULT NULL,
   `time` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -76,4 +79,4 @@ CREATE TABLE `Votes` (
   `text` varchar(250) DEFAULT NULL,
   `time` int(11) DEFAULT NULL,
   `total` int(11) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
