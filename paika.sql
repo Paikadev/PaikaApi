@@ -5,7 +5,7 @@ use Paika;
 
 CREATE TABLE `Interactions` (
   `id` int(11) NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `url_img` varchar(250) NOT NULL,
+  `url_img` varchar(250),
   `hashtag` varchar(250) NOT NULL,
   `players_number` Int(11) NOT NULL,
   `random` int(11) NOT NULL,

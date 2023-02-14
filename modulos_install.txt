@@ -1,11 +1,8 @@
-npm i npm i -S body-parser mysql express cors multer sharp
+npm i npm i -S body-parser mysql express cors multer sharp socket.io @dolbyio/dolbyio-rest-apis-client
 npm install nodemon -g
+npm i socket.io
 
 
-NSHTTPURLResponse: 0x6000035a5980> { URL:  } { Status Code: 400, Headers {
-    Connection =     (
-        close
-    );
-} }
+
 
 post.postInteraction(url_img: "test img swift", hashtag: "#paika", players_number: 4, random: 1, host_user: "juan", date: "sep", total_prompts: 3, player1_points: 12, player2_points: 4, player3_points: 5, player4_points: 5)
