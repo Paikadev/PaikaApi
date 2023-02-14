@@ -208,14 +208,11 @@ io.sockets.on('connection', function (socket) {
                         io.sockets.to(data).emit('img', resultP[0].img )
                         counter = resultP[0].time;
                         io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
-//io.sockets.to(data).emit('option_1', { option: resultP[0].option_1 })
-io.sockets.to(data).emit('option_1', { option: "Opcion 1" })
-//io.sockets.to(data).emit('option_2', { option: resultP[0].option_2 })
-io.sockets.to(data).emit('option_2', { option: "opcion2" })
-//io.sockets.to(data).emit('option_3', { option: resultP[0].option_3 })
-io.sockets.to(data).emit('option_3', { option: "opcion 3" })
-                        io.sockets.to(data).emit('option_4', { option: resultP[0].option_4 })
-                        io.sockets.to(data).emit('option_correct', { option: resultP[0].option_correct })
+                        io.sockets.to(data).emit('option_1', { option_1: resultP[0].option_1 })
+                        io.sockets.to(data).emit('option_2', { option_2: resultP[0].option_2 })
+                        io.sockets.to(data).emit('option_3', { option_3: resultP[0].option_3 })
+                        io.sockets.to(data).emit('option_4', { option_4: resultP[0].option_4 })
+                        io.sockets.to(data).emit('option_correct', { option_correct: resultP[0].option_correct })
                     });
                     break;
                 default:
