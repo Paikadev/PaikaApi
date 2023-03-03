@@ -130,13 +130,13 @@ io.sockets.on('connection', function (socket) {
         socket.leave(socket.current_room);
         socket.leave(idRoom);
         console.log("User leave room")
+        io.sockets.to(idRoom).emit('finish_socket', {finish: true });
     });
 
     socket.on('start', function (data) {
         var started = false
         if(started == false){
             started = true
-            console.log(data)
         io.sockets.to(data).emit('start', { start: 1 })
         var i = 0;
         var counter = 0
@@ -167,8 +167,6 @@ io.sockets.on('connection', function (socket) {
             }
 
             
-            console.log("tipo prompt")
-            console.log(result[0].type)
             io.sockets.to(data).emit('turn', turnIndex);
             io.sockets.to(data).emit('totalPrompts', totalPrompts);
             io.sockets.to(data).emit('type', { type: result[0].type });
@@ -237,14 +235,10 @@ io.sockets.on('connection', function (socket) {
                     clearInterval(countdown)
                     io.sockets.to(data).emit('finish', { finish: 1 })
                     io.sockets.to(data).emit('text', { text: "Winner is " })
-                    console.log("Finish");
-                    io.socketsLeave(data);
-                    socket.leave(data);
-                    socket.leave(socket.current_room);
+                  
                     
                 } else {
                 i++;
-                console.log("i: " + i)
                 let queryOrder = "SELECT idPrompt,type FROM Paika.Order WHERE idInteraction = " + data + " AND turn = " + turnIndex;
                 databaseConnection.connection.query(queryOrder, function (err, result) {
                     if (err) {
@@ -296,14 +290,14 @@ io.sockets.on('connection', function (socket) {
                                     io.sockets.to(data).emit('img', {img: resultP[0].img});
                                     counter = resultP[0].time;
                                     //io.sockets.to(data).emit('option_1', { option: resultP[0].option_1 })
-                                    io.sockets.to(data).emit('option_1', { option: "Opcion 1" })
+                                    io.sockets.to(data).emit('option_1', { option_1: "Opcion 1" })
                                     //io.sockets.to(data).emit('option_2', { option: resultP[0].option_2 })
-                                    io.sockets.to(data).emit('option_2', { option: "opcion2" })
+                                    io.sockets.to(data).emit('option_2', { option_2: "opcion2" })
                                     //io.sockets.to(data).emit('option_3', { option: resultP[0].option_3 })
-                                    io.sockets.to(data).emit('option_3', { option: "opcion 3" })
-                                    io.sockets.to(data).emit('option_4', { option: resultP[0].option_4 })
+                                    io.sockets.to(data).emit('option_3', { option_3: "opcion 3" })
+                                    io.sockets.to(data).emit('option_4', { option_4: resultP[0].option_4 })
                                     
-                                    io.sockets.to(data).emit('option_correct', { option: resultP[0].option_correct })
+                                    io.sockets.to(data).emit('option_correct', { option_correct: resultP[0].option_correct })
                                     turnIndex += 1;
                                 });
                                 break;
