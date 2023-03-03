@@ -126,6 +126,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('leave', function (idRoom) {
+        io.socketsLeave(idRoom);
         socket.leave(socket.current_room);
         socket.leave(idRoom);
         console.log("User leave room")
@@ -179,7 +180,7 @@ io.sockets.on('connection', function (socket) {
                             return 0
                         }
                         io.sockets.to(data).emit('text', { text: resultP[0].text })
-                        io.sockets.to(data).emit('img',resultP[0].img )
+                        io.sockets.to(data).emit('img', {img: resultP[0].img});
                         counter = resultP[0].time;
                         io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
                     });
@@ -192,7 +193,7 @@ io.sockets.on('connection', function (socket) {
                             return 0
                         }
                         io.sockets.to(data).emit('text', { text: resultP[0].text })
-                        io.sockets.to(data).emit('img', resultP[0].img)
+                        io.sockets.to(data).emit('img', {img: resultP[0].img});
                         counter = resultP[0].time;
                         io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
                     });
@@ -205,7 +206,7 @@ io.sockets.on('connection', function (socket) {
                             return 0
                         }
                         io.sockets.to(data).emit('text', { text: resultP[0].text })
-                        io.sockets.to(data).emit('img', resultP[0].img )
+                        io.sockets.to(data).emit('img', {img: resultP[0].img});
                         counter = resultP[0].time;
                         io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
                         io.sockets.to(data).emit('option_1', { option_1: resultP[0].option_1 })
@@ -236,7 +237,11 @@ io.sockets.on('connection', function (socket) {
                     clearInterval(countdown)
                     io.sockets.to(data).emit('finish', { finish: 1 })
                     io.sockets.to(data).emit('text', { text: "Winner is " })
-                    console.log("Finish")
+                    console.log("Finish");
+                    io.socketsLeave(data);
+                    socket.leave(data);
+                    socket.leave(socket.current_room);
+                    
                 } else {
                 i++;
                 console.log("i: " + i)
@@ -260,7 +265,7 @@ io.sockets.on('connection', function (socket) {
                                         return 0
                                     }
                                     io.sockets.to(data).emit('text', { text: resultP[0].text })
-                                    io.sockets.to(data).emit('img', resultP[0].img)
+                                    io.sockets.to(data).emit('img', {img: resultP[0].img});
                                     counter = resultP[0].time;
                                     io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
                                     turnIndex += 1;
@@ -274,7 +279,7 @@ io.sockets.on('connection', function (socket) {
                                         return 0
                                     }
                                     io.sockets.to(data).emit('text', { text: resultP[0].text })
-                                    io.sockets.to(data).emit('img', resultP[0].img)
+                                    io.sockets.to(data).emit('img', {img: resultP[0].img});
                                     counter = resultP[0].time;
                                     io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
                                     turnIndex += 1;
@@ -288,7 +293,7 @@ io.sockets.on('connection', function (socket) {
                                         return 0
                                     }
                                     io.sockets.to(data).emit('text', { text: resultP[0].text })
-                                    io.sockets.to(data).emit('img', resultP[0].img)
+                                    io.sockets.to(data).emit('img', {img: resultP[0].img});
                                     counter = resultP[0].time;
                                     //io.sockets.to(data).emit('option_1', { option: resultP[0].option_1 })
                                     io.sockets.to(data).emit('option_1', { option: "Opcion 1" })
