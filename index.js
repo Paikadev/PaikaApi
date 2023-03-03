@@ -289,14 +289,10 @@ io.sockets.on('connection', function (socket) {
                                     io.sockets.to(data).emit('text', { text: resultP[0].text })
                                     io.sockets.to(data).emit('img', {img: resultP[0].img});
                                     counter = resultP[0].time;
-                                    //io.sockets.to(data).emit('option_1', { option: resultP[0].option_1 })
-                                    io.sockets.to(data).emit('option_1', { option_1: "Opcion 1" })
-                                    //io.sockets.to(data).emit('option_2', { option: resultP[0].option_2 })
-                                    io.sockets.to(data).emit('option_2', { option_2: "opcion2" })
-                                    //io.sockets.to(data).emit('option_3', { option: resultP[0].option_3 })
-                                    io.sockets.to(data).emit('option_3', { option_3: "opcion 3" })
+                                    io.sockets.to(data).emit('option_1', { option_1: resultP[0].option_1 })
+                                    io.sockets.to(data).emit('option_2', { option_2: resultP[0].option_2 })
+                                    io.sockets.to(data).emit('option_3', { option_3: resultP[0].option_3 })
                                     io.sockets.to(data).emit('option_4', { option_4: resultP[0].option_4 })
-                                    
                                     io.sockets.to(data).emit('option_correct', { option_correct: resultP[0].option_correct })
                                     turnIndex += 1;
                                 });
