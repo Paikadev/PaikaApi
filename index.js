@@ -100,6 +100,7 @@ const server = app.listen(9000, () => {
 const io = require('socket.io')(server)
 
 connections = [];
+playerPoints = [];
 
 
 
@@ -134,20 +135,46 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('points', function (data) {
-        console.log("User points data");
-        console.log(data);
-        console.log(data['name']);
+        console.log("Entro a points")
         let idInteraction = JSON.stringify(data['id_interaction']);
         console.log("****User points data****");
+        playerPoints.push(data);
+        console.log("***Points Users:");
+        console.log(playerPoints);
+        console.log("Points Users***");
         io.sockets.to(idInteraction).emit('points_update', data);
     });
 
+    socket.on('initial', function (data) {
+        console.log("initial");
+        let query = "SELECT total_prompts,host_user,players_number FROM Interactions WHERE id = " + data;
+        databaseConnection.connection.query(query, function (err, result) {
+            if (err) {
+                return 0
+            }
+            console.log("user_host");
+            console.log(result[0].host_user)
+            console.log( result[0].players_number );            
+            io.sockets.to(data).emit('host_user', { host_user: result[0].host_user });
+            io.sockets.to(data).emit('players_number', { players_number: result[0].players_number });
+            
+        });
+    });
+
+    
+
 
     socket.on('start', function (data) {
-        var started = false
-        if(started == false){
+        var started;
+        
+        if (started == true){
+            return
+        }
+        started = true;
+        if( true){
             started = true
         io.sockets.to(data).emit('start', { start: 1 })
+
         var i = 0;
         var counter = 0
         var time = 0
@@ -161,11 +188,13 @@ io.sockets.on('connection', function (socket) {
 
 
 
-        let query = "SELECT total_prompts FROM Interactions WHERE id = " + data;
+        let query = "SELECT total_prompts,host_user,players_number FROM Interactions WHERE id = " + data;
         databaseConnection.connection.query(query, function (err, result) {
             if (err) {
                 return 0
             }
+            io.sockets.to(data).emit('host_user', { host_user: result[0].host_user });
+            io.sockets.to(data).emit('players_number', { players_number: result[0].players_number });
             let number = JSON.stringify(result[0].total_prompts)
             totalPrompts = result[0].total_prompts
             return number
@@ -179,7 +208,7 @@ io.sockets.on('connection', function (socket) {
             
             io.sockets.to(data).emit('turn', turnIndex);
             io.sockets.to(data).emit('totalPrompts', totalPrompts);
-            io.sockets.to(data).emit('type', { type: result[0].type });
+         
             switch (result[0].type) {
                 case "TextOnly":
                     let queryPromptTextOnly = "SELECT id,text,img,time FROM " + result[0].type + " WHERE idInteraction = " + data + " AND turn = 0";
