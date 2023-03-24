@@ -133,6 +133,16 @@ io.sockets.on('connection', function (socket) {
         io.sockets.to(idRoom).emit('finish_socket', {finish: true });
     });
 
+    socket.on('points', function (data) {
+        console.log("User points data");
+        console.log(data);
+        console.log(data['name']);
+        let idInteraction = JSON.stringify(data['id_interaction']);
+        console.log("****User points data****");
+        io.sockets.to(idInteraction).emit('points_update', data);
+    });
+
+
     socket.on('start', function (data) {
         var started = false
         if(started == false){
