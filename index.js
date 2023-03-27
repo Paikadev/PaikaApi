@@ -137,12 +137,23 @@ io.sockets.on('connection', function (socket) {
     socket.on('points', function (data) {
         console.log("Entro a points")
         let idInteraction = JSON.stringify(data['id_interaction']);
-        console.log("****User points data****");
-        playerPoints.push(data);
+        console.log("****User options data****");
+   
         console.log("***Points Users:");
         console.log(playerPoints);
         console.log("Points Users***");
         io.sockets.to(idInteraction).emit('points_update', data);
+    });
+
+    socket.on('option_user', function (data) {
+        console.log("Entro a points")
+        let idInteraction = JSON.stringify(data['id_interaction']);
+        console.log("****User points data****");
+
+        console.log("***Points Users:");
+        console.log(playerPoints);
+        console.log("Points Users***");
+        io.sockets.to(idInteraction).emit('options_update', data);
     });
 
     socket.on('initial', function (data) {
