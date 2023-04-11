@@ -156,6 +156,174 @@ io.sockets.on('connection', function (socket) {
         io.sockets.to(idInteraction).emit('options_update', data);
     });
 
+    user1Count=0.0;
+    user1Name= "";
+    user2Count=0.0;
+    user2Name= "";
+    user3Count=0.0;
+    user3Name= "";
+    user4Count=0.0;
+    user5Name= "";
+
+    socket.on('vote_user', function (data) {
+        console.log("Entro a votos")
+        let idInteraction = JSON.stringify(data['id_interaction']);
+
+        if(data['number_players'] == 2)
+        {
+         if(user1Name == "")
+         {
+             user1Name =  data['vote'];
+         }
+         if(user2Name == "" && user1Name != "")
+         {
+             user2Name = data['vote'];
+         }
+ 
+ 
+ 
+         if(user1Name == data['vote']){
+             user1Count = user1Count + 1;
+         }
+         if(user2Name == data['vote']){
+             user2Count = user2Count + 1;
+         }
+ 
+         if(user1Name == data['current_vote']){
+             user1Count = user1Count - 1;
+         }
+         if(user2Name == data['current_vote']){
+             user2Count = user2Count - 1;
+         }
+ 
+         totalVotes = user1Count + user2Count;
+ 
+         datos = {
+             "user1Name": user1Name,
+             "user1Percent": (user1Count * 100)/totalVotes,
+             "user2Name": user2Name,
+             "user2Percent": (user2Count * 100)/totalVotes,
+         }
+ 
+         io.sockets.to(idInteraction).emit('votes_update', datos);
+        }
+
+        if(data['number_players'] == 3)
+       {
+        if(user1Name == "")
+        {
+            user1Name =  data['vote'];
+        }
+        if(user2Name == "" && user1Name != "")
+        {
+            user2Name = data['vote'];
+        }
+        if(user3Name == "" && user1Name != "" && user2Name != "")
+        {
+            user3Name = data['vote'];
+        }
+     
+
+
+
+        if(user1Name == data['vote']){
+            user1Count = user1Count + 1;
+        }
+        if(user2Name == data['vote']){
+            user2Count = user2Count + 1;
+        }
+        if(user3Name = data['vote']){
+            user3Count = user3Count + 1;
+        }
+
+        if(user1Name == data['current_vote']){
+            user1Count = user1Count - 1;
+        }
+        if(user2Name == data['current_vote']){
+            user2Count = user2Count - 1;
+        }
+        if(user3Name == data['current_vote']){
+            user3Count = user3Count - 1;
+        }
+
+        totalVotes = user1Count + user2Count + user3Count;
+
+        datos = {
+            "user1Name": user1Name,
+            "user1Percent": (user1Count * 100)/totalVotes,
+            "user2Name": user2Name,
+            "user2Percent": (user2Count * 100)/totalVotes,
+            "user3Name": user3Name,
+            "user3Percent": (user3Count * 100)/totalVotes,
+        }
+
+        io.sockets.to(idInteraction).emit('votes_update', datos);
+       }
+
+       if(data['number_players'] == 4)
+       {
+        if(user1Name == "")
+        {
+            user1Name =  data['vote'];
+        }
+        if(user2Name == "" && user1Name != "")
+        {
+            user2Name = data['vote'];
+        }
+        if(user3Name == "" && user1Name != "" && user2Name != "")
+        {
+            user3Name = data['vote'];
+        }
+        if(user4Name == "" && user1Name != "" && user2Name != "" && user3Name != "")
+        {
+            user4Name = data['vote'];
+        }
+
+
+
+        if(user1Name == data['vote']){
+            user1Count = user1Count + 1;
+        }
+        if(user2Name == data['vote']){
+            user2Count = user2Count + 1;
+        }
+        if(user3Name = data['vote']){
+            user3Count = user3Count + 1;
+        }
+        if(user4Name == data['vote']){
+            user4Count = user4Count + 1;
+        }
+
+        if(user1Name == data['current_vote']){
+            user1Count = user1Count - 1;
+        }
+        if(user2Name == data['current_vote']){
+            user2Count = user2Count - 1;
+        }
+        if(user3Name == data['current_vote']){
+            user3Count = user3Count - 1;
+        }
+        if(user4Name == data['current_vote']){
+            user4Count = user4Count - 1;
+        }
+
+        totalVotes = user1Count + user2Count + user3Count+ user4Count;
+
+        datos = {
+            "user1Name": user1Name,
+            "user1Percent": (user1Count * 100)/totalVotes,
+            "user2Name": user2Name,
+            "user2Percent": (user2Count * 100)/totalVotes,
+            "user3Name": user3Name,
+            "user3Percent": (user3Count * 100)/totalVotes,
+            "user4Name": user4Name,
+            "user4Percent": (user4Count * 100)/totalVotes,
+        }
+
+        io.sockets.to(idInteraction).emit('votes_update', datos);
+       }
+    });
+
     socket.on('initial', function (data) {
         console.log("initial");
         let query = "SELECT total_prompts,host_user,players_number FROM Interactions WHERE id = " + data;
