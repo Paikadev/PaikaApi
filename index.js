@@ -47,8 +47,26 @@ app.get("/getAceessToken", (req, res) => {
 app.post("/interaction", (req, res) => {
     interactionsController.insert(req, res)
 });
+app.post("/stream", (req, res) => {
+    interactionsController.insertStreams(req, res)
+});
 app.get("/interactions", (req, res) => {
     interactionsController.read(req, res)
+});
+app.get("/Streams", (req, res) => {
+    interactionsController.readStreams(req, res)
+});
+
+app.post("updateLive", (req, res) => {
+    interactionsController.updateLive(req, res)
+});
+
+app.post("updateLiveStatus", (req, res) => {
+    interactionsController.updateLiveStatus(req, res)
+});
+
+app.get("/streams/IdInteraction", (req, res) => {
+    interactionsController.readConferenceIdStream(req, res)
 });
 
 app.post("/votes", (req, res) => {

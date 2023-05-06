@@ -20,6 +20,20 @@ function insert(req, res){
     });
 }
 
+function insertStreams(req, res){
+  console.log(req.body)
+    let insertQuery = "INSERT INTO Streams (name,description,total_viewers,url_live,url_record,live,img,idInteraction,idConference,idPlayers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    let query = mysql.format(insertQuery, [req.body.name, req.body.description, req.body.total_viewers, req.url_live, req.body.url_record, req.body.live, req.body.img, req.body.idInteraction, req.body.idConference, req.body.idPlayers])
+    databaseConnection.connection.query(query, function(err,result){
+        if(err) { 
+            return res.status(500).json({
+              message: 'Error create stream'
+            })
+          }
+          return res.json({id: result.insertId})
+    });
+}
+
 async function getAceessToken(req, res){
   const at = await dolbyio.communications.authentication.getClientAccessToken(APP_KEY, APP_SECRET);
   if(at.access_token == null || at.access_token == "") { 
@@ -43,6 +57,18 @@ function read(req,res){
 
 }
 
+function readStreams(req,res){
+  databaseConnection.connection.query('SELECT * From Streams', function (err, result){
+      if(err) { 
+          return res.status(500).json({
+            message: 'Error get Streams'
+          })
+        }
+        return res.json(result)
+  });
+
+}
+
 function readId(req,res){
   let query = 'SELECT * From Interactions WHERE id = '+req.params.id
   databaseConnection.connection.query(query, function (err, result){
@@ -56,12 +82,50 @@ function readId(req,res){
 
 }
 
+function readConferenceIdStreams(req,res){
+  let query = 'SELECT idInteraction From Streams WHERE idConference = '+req.body.idConference
+  databaseConnection.connection.query(query, function (err, result){
+      if(err) { 
+          return res.status(500).json({
+            message: 'Error '
+          })
+        }
+        return res.json(result)
+  });
+
+}
+
 function updatePoints(req,res){
   let query = "UPDATE Interactions SET player" + req.params.player + "_points = " + req.params.points + " WHERE id = " + req.params.id;
   databaseConnection.connection.query(query, function (err, result){
       if(err) { 
           return res.status(500).json({
             message: 'Error get interaction by id'
+          })
+        }
+        return res.json(result)
+  });
+}
+
+
+function updateLive(req,res){
+  let query = "UPDATE Streams SET url_live" + req.body.url_live + ", live = " + req.body.live + " WHERE id = " + req.body.id;
+  databaseConnection.connection.query(query, function (err, result){
+      if(err) { 
+          return res.status(500).json({
+            message: 'Error '
+          })
+        }
+        return res.json(result)
+  });
+}
+
+function updateLiveStatus(req,res){
+  let query = "UPDATE Streams SET live = " + req.body.live + " WHERE id = " + req.body.id;
+  databaseConnection.connection.query(query, function (err, result){
+      if(err) { 
+          return res.status(500).json({
+            message: 'Error'
           })
         }
         return res.json(result)
