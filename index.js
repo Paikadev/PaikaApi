@@ -28,8 +28,13 @@ var interactionsController = require('./Controllers/interactions.controller')
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-//app.use(cors());
-
+app.use(cors());
+app.use((req,res,next)=>{
+    res.setHeader('Access-Control-Allow-Origin','*');
+    res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
+    res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
+    next(); 
+})
 
 app.get("/", (req, res) => {
     res.send("Paika API v1.0")
@@ -97,7 +102,13 @@ const server = app.listen(9000, () => {
 });
 
 
-const io = require('socket.io')(server)
+
+var io = require("socket.io")(server, {
+    cors: {
+        origin: "*",
+        methods: ["GET", "POST"]
+       }
+     })
 
 connections = [];
 playerPoints = [];

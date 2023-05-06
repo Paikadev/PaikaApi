@@ -2,8 +2,8 @@ const mysql = require('mysql')
 const dolbyio = require('@dolbyio/dolbyio-rest-apis-client');
 const databaseConnection = require('../database/connection');
 
-const APP_KEY = 'cCtj_wIfvRnmfeUnDpskxQ==';
-const APP_SECRET = 's-Lo5yY_UXWc4VPVSJz0rooEwI4_AcG7OqDwP3zK7Do=';
+const APP_KEY = 'r4jNvxc-zFCrHySvhtw3VA==';
+const APP_SECRET = 'eP-HH8T6vHF4RaHJEP8oR3ipwF_16YeUVvSJ-FDek-M=';
 
 
 function insert(req, res){
