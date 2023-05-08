@@ -44,7 +44,7 @@ app.get("/getAceessToken", (req, res) => {
     interactionsController.getAceessToken(req,res);
 })
 
-app.get("/startStream", (req, res) => {
+app.post("/startStream", (req, res) => {
     interactionsController.startStream(req,res);
 })
 
