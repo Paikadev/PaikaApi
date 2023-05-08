@@ -111,9 +111,10 @@ function readId(req, res) {
 }
 
 function readConferenceIdStreams(req, res) {
-  let query = 'SELECT idInteraction From Streams WHERE idConference = ' + req.body.idConference
+  let query = 'SELECT idInteraction FROM Streams WHERE idConference = "' + req.body.idConference + '"';
   databaseConnection.connection.query(query, function (err, result) {
     if (err) {
+      throw err;
       return res.status(500).json({
         message: 'Error '
       })
