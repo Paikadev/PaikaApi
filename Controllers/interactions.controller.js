@@ -22,7 +22,6 @@ function insert(req, res) {
 
 function insertStreams(req, res) {
   console.log(req.body)
-<<<<<<< HEAD
     let insertQuery = "INSERT INTO Streams (name,description,total_viewers,url_live,url_record,live,img,idInteraction,idConference,subscribeToken) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
     let query = mysql.format(insertQuery, [req.body.name, req.body.description, req.body.total_viewers, req.url_live, req.body.url_record, req.body.live, req.body.img, req.body.idInteraction, req.body.idConference, req.body.subscribeToken])
     databaseConnection.connection.query(query, function(err,result){
@@ -33,19 +32,7 @@ function insertStreams(req, res) {
           }
           return res.json({id: result.insertId})
     });
-=======
-  let insertQuery = "INSERT INTO Streams (name,description,total_viewers,url_live,url_record,live,img,idInteraction,idConference,idPlayers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-  let query = mysql.format(insertQuery, [req.body.name, req.body.description, req.body.total_viewers, req.url_live, req.body.url_record, req.body.live, req.body.img, req.body.idInteraction, req.body.idConference, req.body.idPlayers])
-  databaseConnection.connection.query(query, function (err, result) {
-    if (err) {
-      return res.status(500).json({
-        message: 'Error create stream'
-      })
-    }
-    return res.json({ id: result.insertId })
-  });
->>>>>>> 6fd3dfb5acbd973461108bfac87301c8b2a2ad7b
-}
+  }
 
 async function getAceessToken(req, res) {
   const at = await dolbyio.communications.authentication.getClientAccessToken(APP_KEY, APP_SECRET);
@@ -254,8 +241,5 @@ function MaxPoints(player1, player2, player3, player4, res) {
   }
 }
 
-<<<<<<< HEAD
-module.exports = {insert, read, readId, updatePoints, getWinner,getTurns,getAceessToken, startStream, insertStreams}
-=======
 module.exports = { insert, read, readId, updatePoints, getWinner, getTurns, getAceessToken, startStream, readConferenceIdStreams,updateLive }
->>>>>>> 6fd3dfb5acbd973461108bfac87301c8b2a2ad7b
+
