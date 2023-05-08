@@ -241,5 +241,5 @@ function MaxPoints(player1, player2, player3, player4, res) {
   }
 }
 
-module.exports = { insert, read, readId, updatePoints, getWinner, getTurns, getAceessToken, startStream, readConferenceIdStreams,updateLive }
+module.exports = { insert, read, readId, updatePoints, getWinner, getTurns, getAceessToken, startStream, readConferenceIdStreams,updateLive, readStreams, insertStreams }
 
