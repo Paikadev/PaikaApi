@@ -70,7 +70,7 @@ app.post("updateLiveStatus", (req, res) => {
 });
 
 app.get("/streams/IdInteraction", (req, res) => {
-    interactionsController.readConferenceIdStream(req, res)
+    interactionsController.readConferenceIdStreams(req, res)
 });
 
 app.post("/votes", (req, res) => {
