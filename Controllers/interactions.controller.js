@@ -44,6 +44,10 @@ async function getAceessToken(req, res){
   return res.json({AccessToken: at.access_token});
 }
 
+async function startStream(req, res){
+  
+}
+
 
 function read(req,res){
     databaseConnection.connection.query('SELECT * From Interactions', function (err, result){
@@ -214,4 +218,4 @@ function MaxPoints(player1,player2,player3,player4, res)
   }
 }
 
-module.exports = {insert, read, readId, updatePoints, getWinner,getTurns,getAceessToken}
+module.exports = {insert, read, readId, updatePoints, getWinner,getTurns,getAceessToken, startStream}
