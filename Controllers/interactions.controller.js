@@ -22,8 +22,8 @@ function insert(req, res){
 
 function insertStreams(req, res){
   console.log(req.body)
-    let insertQuery = "INSERT INTO Streams (name,description,total_viewers,url_live,url_record,live,img,idInteraction,idConference,idPlayers) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
-    let query = mysql.format(insertQuery, [req.body.name, req.body.description, req.body.total_viewers, req.url_live, req.body.url_record, req.body.live, req.body.img, req.body.idInteraction, req.body.idConference, req.body.idPlayers])
+    let insertQuery = "INSERT INTO Streams (name,description,total_viewers,url_live,url_record,live,img,idInteraction,idConference,subscribeToken) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+    let query = mysql.format(insertQuery, [req.body.name, req.body.description, req.body.total_viewers, req.url_live, req.body.url_record, req.body.live, req.body.img, req.body.idInteraction, req.body.idConference, req.body.subscribeToken])
     databaseConnection.connection.query(query, function(err,result){
         if(err) { 
             return res.status(500).json({
@@ -218,4 +218,4 @@ function MaxPoints(player1,player2,player3,player4, res)
   }
 }
 
-module.exports = {insert, read, readId, updatePoints, getWinner,getTurns,getAceessToken, startStream}
+module.exports = {insert, read, readId, updatePoints, getWinner,getTurns,getAceessToken, startStream, insertStreams}
