@@ -45,15 +45,31 @@ async function getAceessToken(req, res) {
 }
 
 async function startStream(req, res) {
-  const sdk = require('api')('@communications-apis/v1.4.9#1dfatt2fmlesv8nwn');
+  const sdkToken = require('api')('@communications-apis/v1.4.9#1dfatt2fmlesv8nwn');
 
-  sdk.auth('r4jNvxc-zFCrHySvhtw3VA==', 'eP-HH8T6vHF4RaHJEP8oR3ipwF_16YeUVvSJ-FDek-M=');
-  sdk.getApiToken({ grant_type: 'client_credentials' }, {
+  var tokenApi = ""
+
+  var response = ""
+
+  sdkToken.auth('r4jNvxc-zFCrHySvhtw3VA==', 'eP-HH8T6vHF4RaHJEP8oR3ipwF_16YeUVvSJ-FDek-M=');
+  await sdkToken.getApiToken({ grant_type: 'client_credentials' }, {
     accept: 'application/json',
     'cache-control': 'no-cache'
   })
-    .then(({ data }) => console.log(data))
+    .then(({ data }) => tokenApi = data['access_token'])
     .catch(err => console.error(err));
+
+    const sdk = require('api')('@communications-apis/v1.4.9#hgralehnmhj4');
+
+    sdk.auth(tokenApi);
+
+    sdk.startRts({
+      layoutUrl: 'https://main--boisterous-gumdrop-35c313.netlify.app/'
+    }, {conference_id: req.body.idConference})
+      .then(({ data }) => response = data)
+      .catch(err => console.error(err));
+
+    res.json(response);
 }
 
 
@@ -225,4 +241,4 @@ function MaxPoints(player1, player2, player3, player4, res) {
   }
 }
 
-module.exports = { insert, read, readId, updatePoints, getWinner, getTurns, getAceessToken, startStream }
+module.exports = { insert, read, readId, updatePoints, getWinner, getTurns, getAceessToken, startStream, readConferenceIdStreams,updateLive }
