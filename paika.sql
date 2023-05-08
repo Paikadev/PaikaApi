@@ -46,6 +46,21 @@ CREATE TABLE `Order` (
   `idPrompt` varchar(250) NOT NULL
 ) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
 
+CREATE TABLE `Streams` (
+  `name` varchar(250),
+  `description` varchar(250),
+  `total_viewers` int(11),
+  `url_live` varchar(250),
+  `url_record` varchar(250),
+  `live` int(11),
+  `img` varchar(250),
+  `idInteraction` varchar(250),
+  `idConference` varchar(250),
+  `subscribeToken` varchar(250),
+  `streamAccountId` varchar(250),
+  "streamName" varchar(250)
+) CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
 -- --------------------------------------------------------
 
 --
