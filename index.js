@@ -1,5 +1,7 @@
 var express = require('express');
 var app = express();
+const https = require("https");
+const fs = require("fs");
 require('dotenv').config();
 const cors = require("cors");
 const multer = require("multer");
@@ -18,6 +20,7 @@ var multipleOptionsController = require('./Controllers/multipleOptions.controlle
 var TextOnlyController = require('./Controllers/textOnlyController')
 var interactionsController = require('./Controllers/interactions.controller')
 
+
 //Routes
 //app.use('/interaction', routerInteraction);
 //app.use('/textOnly', routerTextOnly);
@@ -25,15 +28,20 @@ var interactionsController = require('./Controllers/interactions.controller')
 //app.use('/multipleOptions', routerMultipleOptions);
 
 
+const options = {
+    key: fs.readFileSync('certificates/key.pem'),
+    cert: fs.readFileSync('certificates/cert.pem')
+}
+
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-app.use((req,res,next)=>{
-    res.setHeader('Access-Control-Allow-Origin','*');
-    res.setHeader('Access-Control-Allow-Methods','GET,POST,PUT,PATCH,DELETE');
-    res.setHeader('Access-Control-Allow-Methods','Content-Type','Authorization');
-    next(); 
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
+    res.setHeader('Access-Control-Allow-Methods', 'Content-Type', 'Authorization');
+    next();
 })
 
 app.get("/", (req, res) => {
@@ -41,11 +49,11 @@ app.get("/", (req, res) => {
 });
 
 app.get("/getAceessToken", (req, res) => {
-    interactionsController.getAceessToken(req,res);
+    interactionsController.getAceessToken(req, res);
 })
 
 app.post("/startStream", (req, res) => {
-    interactionsController.startStream(req,res);
+    interactionsController.startStream(req, res);
 })
 
 app.post("/interaction", (req, res) => {
@@ -116,21 +124,22 @@ app.use('/image', express.static(staticRoute));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-//const PORT = process.env || 8080
-
-const server = app.listen(9000, () => {
-    console.log("Listening on port: " + 9000);
-    databaseConnection.connectionToDatabase();
-});
-
+https
+  .createServer(options,app)
+  .listen(443, ()=>{
+    console.log('server is runing at port 443')
+  });
 
 
-var io = require("socket.io")(server, {
+
+
+
+var io = require("socket.io")(https, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"]
-       }
-     })
+    }
+})
 
 connections = [];
 playerPoints = [];
@@ -140,6 +149,19 @@ playerPoints = [];
 io.sockets.on('connection', function (socket) {
     connections.push(socket);
     console.log('Connect: %s sockets are connected', connections.length);
+
+    datos = {
+        "img": img,
+        "name": "Lalo Paika",
+        "description": "this is test a sh hs",
+        "rtmpUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4",
+        "recordpUrl": "(user2Count * 100) / totalVotes,",
+        "live": true,
+        "totalViewers": 100,
+        
+    }
+
+    io.sockets.emit('streamList', datos);
 
     socket.on('disconnect', function (data) {
         connections.splice(connections.indexOf(socket), 1)
@@ -164,14 +186,14 @@ io.sockets.on('connection', function (socket) {
         socket.leave(socket.current_room);
         socket.leave(idRoom);
         console.log("User leave room")
-        io.sockets.to(idRoom).emit('finish_socket', {finish: true });
+        io.sockets.to(idRoom).emit('finish_socket', { finish: true });
     });
 
     socket.on('points', function (data) {
         console.log("Entro a points")
         let idInteraction = JSON.stringify(data['id_interaction']);
         console.log("****User options data****");
-   
+
         console.log("***Points Users:");
         console.log(playerPoints);
         console.log("Points Users***");
@@ -189,172 +211,160 @@ io.sockets.on('connection', function (socket) {
         io.sockets.to(idInteraction).emit('options_update', data);
     });
 
-    user1Count=0.0;
-    user1Name= "";
-    user2Count=0.0;
-    user2Name= "";
-    user3Count=0.0;
-    user3Name= "";
-    user4Count=0.0;
-    user5Name= "";
+    user1Count = 0.0;
+    user1Name = "";
+    user2Count = 0.0;
+    user2Name = "";
+    user3Count = 0.0;
+    user3Name = "";
+    user4Count = 0.0;
+    user5Name = "";
 
     socket.on('vote_user', function (data) {
         console.log("Entro a votos")
         let idInteraction = JSON.stringify(data['id_interaction']);
 
-        if(data['number_players'] == 2)
-        {
-         if(user1Name == "")
-         {
-             user1Name =  data['vote'];
-         }
-         if(user2Name == "" && user1Name != "")
-         {
-             user2Name = data['vote'];
-         }
- 
- 
- 
-         if(user1Name == data['vote']){
-             user1Count = user1Count + 1;
-         }
-         if(user2Name == data['vote']){
-             user2Count = user2Count + 1;
-         }
- 
-         if(user1Name == data['current_vote']){
-             user1Count = user1Count - 1;
-         }
-         if(user2Name == data['current_vote']){
-             user2Count = user2Count - 1;
-         }
- 
-         totalVotes = user1Count + user2Count;
- 
-         datos = {
-             "user1Name": user1Name,
-             "user1Percent": (user1Count * 100)/totalVotes,
-             "user2Name": user2Name,
-             "user2Percent": (user2Count * 100)/totalVotes,
-         }
- 
-         io.sockets.to(idInteraction).emit('votes_update', datos);
-        }
-
-        if(data['number_players'] == 3)
-       {
-        if(user1Name == "")
-        {
-            user1Name =  data['vote'];
-        }
-        if(user2Name == "" && user1Name != "")
-        {
-            user2Name = data['vote'];
-        }
-        if(user3Name == "" && user1Name != "" && user2Name != "")
-        {
-            user3Name = data['vote'];
-        }
-     
+        if (data['number_players'] == 2) {
+            if (user1Name == "") {
+                user1Name = data['vote'];
+            }
+            if (user2Name == "" && user1Name != "") {
+                user2Name = data['vote'];
+            }
 
 
 
-        if(user1Name == data['vote']){
-            user1Count = user1Count + 1;
-        }
-        if(user2Name == data['vote']){
-            user2Count = user2Count + 1;
-        }
-        if(user3Name = data['vote']){
-            user3Count = user3Count + 1;
+            if (user1Name == data['vote']) {
+                user1Count = user1Count + 1;
+            }
+            if (user2Name == data['vote']) {
+                user2Count = user2Count + 1;
+            }
+
+            if (user1Name == data['current_vote']) {
+                user1Count = user1Count - 1;
+            }
+            if (user2Name == data['current_vote']) {
+                user2Count = user2Count - 1;
+            }
+
+            totalVotes = user1Count + user2Count;
+
+            datos = {
+                "user1Name": user1Name,
+                "user1Percent": (user1Count * 100) / totalVotes,
+                "user2Name": user2Name,
+                "user2Percent": (user2Count * 100) / totalVotes,
+            }
+
+            io.sockets.to(idInteraction).emit('votes_update', datos);
         }
 
-        if(user1Name == data['current_vote']){
-            user1Count = user1Count - 1;
-        }
-        if(user2Name == data['current_vote']){
-            user2Count = user2Count - 1;
-        }
-        if(user3Name == data['current_vote']){
-            user3Count = user3Count - 1;
-        }
-
-        totalVotes = user1Count + user2Count + user3Count;
-
-        datos = {
-            "user1Name": user1Name,
-            "user1Percent": (user1Count * 100)/totalVotes,
-            "user2Name": user2Name,
-            "user2Percent": (user2Count * 100)/totalVotes,
-            "user3Name": user3Name,
-            "user3Percent": (user3Count * 100)/totalVotes,
-        }
-
-        io.sockets.to(idInteraction).emit('votes_update', datos);
-       }
-
-       if(data['number_players'] == 4)
-       {
-        if(user1Name == "")
-        {
-            user1Name =  data['vote'];
-        }
-        if(user2Name == "" && user1Name != "")
-        {
-            user2Name = data['vote'];
-        }
-        if(user3Name == "" && user1Name != "" && user2Name != "")
-        {
-            user3Name = data['vote'];
-        }
-        if(user4Name == "" && user1Name != "" && user2Name != "" && user3Name != "")
-        {
-            user4Name = data['vote'];
-        }
+        if (data['number_players'] == 3) {
+            if (user1Name == "") {
+                user1Name = data['vote'];
+            }
+            if (user2Name == "" && user1Name != "") {
+                user2Name = data['vote'];
+            }
+            if (user3Name == "" && user1Name != "" && user2Name != "") {
+                user3Name = data['vote'];
+            }
 
 
 
-        if(user1Name == data['vote']){
-            user1Count = user1Count + 1;
-        }
-        if(user2Name == data['vote']){
-            user2Count = user2Count + 1;
-        }
-        if(user3Name = data['vote']){
-            user3Count = user3Count + 1;
-        }
-        if(user4Name == data['vote']){
-            user4Count = user4Count + 1;
+
+            if (user1Name == data['vote']) {
+                user1Count = user1Count + 1;
+            }
+            if (user2Name == data['vote']) {
+                user2Count = user2Count + 1;
+            }
+            if (user3Name = data['vote']) {
+                user3Count = user3Count + 1;
+            }
+
+            if (user1Name == data['current_vote']) {
+                user1Count = user1Count - 1;
+            }
+            if (user2Name == data['current_vote']) {
+                user2Count = user2Count - 1;
+            }
+            if (user3Name == data['current_vote']) {
+                user3Count = user3Count - 1;
+            }
+
+            totalVotes = user1Count + user2Count + user3Count;
+
+            datos = {
+                "user1Name": user1Name,
+                "user1Percent": (user1Count * 100) / totalVotes,
+                "user2Name": user2Name,
+                "user2Percent": (user2Count * 100) / totalVotes,
+                "user3Name": user3Name,
+                "user3Percent": (user3Count * 100) / totalVotes,
+            }
+
+            io.sockets.to(idInteraction).emit('votes_update', datos);
         }
 
-        if(user1Name == data['current_vote']){
-            user1Count = user1Count - 1;
-        }
-        if(user2Name == data['current_vote']){
-            user2Count = user2Count - 1;
-        }
-        if(user3Name == data['current_vote']){
-            user3Count = user3Count - 1;
-        }
-        if(user4Name == data['current_vote']){
-            user4Count = user4Count - 1;
-        }
+        if (data['number_players'] == 4) {
+            if (user1Name == "") {
+                user1Name = data['vote'];
+            }
+            if (user2Name == "" && user1Name != "") {
+                user2Name = data['vote'];
+            }
+            if (user3Name == "" && user1Name != "" && user2Name != "") {
+                user3Name = data['vote'];
+            }
+            if (user4Name == "" && user1Name != "" && user2Name != "" && user3Name != "") {
+                user4Name = data['vote'];
+            }
 
-        totalVotes = user1Count + user2Count + user3Count+ user4Count;
 
-        datos = {
-            "user1Name": user1Name,
-            "user1Percent": (user1Count * 100)/totalVotes,
-            "user2Name": user2Name,
-            "user2Percent": (user2Count * 100)/totalVotes,
-            "user3Name": user3Name,
-            "user3Percent": (user3Count * 100)/totalVotes,
-            "user4Name": user4Name,
-            "user4Percent": (user4Count * 100)/totalVotes,
+
+            if (user1Name == data['vote']) {
+                user1Count = user1Count + 1;
+            }
+            if (user2Name == data['vote']) {
+                user2Count = user2Count + 1;
+            }
+            if (user3Name = data['vote']) {
+                user3Count = user3Count + 1;
+            }
+            if (user4Name == data['vote']) {
+                user4Count = user4Count + 1;
+            }
+
+            if (user1Name == data['current_vote']) {
+                user1Count = user1Count - 1;
+            }
+            if (user2Name == data['current_vote']) {
+                user2Count = user2Count - 1;
+            }
+            if (user3Name == data['current_vote']) {
+                user3Count = user3Count - 1;
+            }
+            if (user4Name == data['current_vote']) {
+                user4Count = user4Count - 1;
+            }
+
+            totalVotes = user1Count + user2Count + user3Count + user4Count;
+
+            datos = {
+                "user1Name": user1Name,
+                "user1Percent": (user1Count * 100) / totalVotes,
+                "user2Name": user2Name,
+                "user2Percent": (user2Count * 100) / totalVotes,
+                "user3Name": user3Name,
+                "user3Percent": (user3Count * 100) / totalVotes,
+                "user4Name": user4Name,
+                "user4Percent": (user4Count * 100) / totalVotes,
+            }
+
+            io.sockets.to(idInteraction).emit('votes_update', datos);
         }
-
-        io.sockets.to(idInteraction).emit('votes_update', datos);
-       }
     });
 
     socket.on('initial', function (data) {
@@ -366,206 +376,206 @@ io.sockets.on('connection', function (socket) {
             }
             console.log("user_host");
             console.log(result[0].host_user)
-            console.log( result[0].players_number );            
+            console.log(result[0].players_number);
             io.sockets.to(data).emit('host_user', { host_user: result[0].host_user });
             io.sockets.to(data).emit('players_number', { players_number: result[0].players_number });
-            
+
         });
     });
 
-    
+
 
 
     socket.on('start', function (data) {
         var started;
-        
-        if (started == true){
+
+        if (started == true) {
             return
         }
         started = true;
-        if( true){
+        if (true) {
             started = true
-        io.sockets.to(data).emit('start', { start: 1 })
+            io.sockets.to(data).emit('start', { start: 1 })
 
-        var i = 0;
-        var counter = 0
-        var time = 0
-        var turnIndex = 0
-        var totalPrompts = 0
-        var text = ""
-        var img = ""
-        var finishInteraction = false
+            var i = 0;
+            var counter = 0
+            var time = 0
+            var turnIndex = 0
+            var totalPrompts = 0
+            var text = ""
+            var img = ""
+            var finishInteraction = false
 
-        var waiting = 0
-
-
-
-        let query = "SELECT total_prompts,host_user,players_number FROM Interactions WHERE id = " + data;
-        databaseConnection.connection.query(query, function (err, result) {
-            if (err) {
-                return 0
-            }
-            io.sockets.to(data).emit('host_user', { host_user: result[0].host_user });
-            io.sockets.to(data).emit('players_number', { players_number: result[0].players_number });
-            let number = JSON.stringify(result[0].total_prompts)
-            totalPrompts = result[0].total_prompts
-            return number
-        });
-        let queryOrder = "SELECT idPrompt,type FROM Paika.Order WHERE idInteraction = " + data + " AND turn = 0";
-        databaseConnection.connection.query(queryOrder, function (err, result) {
-            if (err) {
-                return 0
-            }
-
-            
-            io.sockets.to(data).emit('turn', turnIndex);
-            io.sockets.to(data).emit('totalPrompts', totalPrompts);
-         
-            switch (result[0].type) {
-                case "TextOnly":
-                    let queryPromptTextOnly = "SELECT id,text,img,time FROM " + result[0].type + " WHERE idInteraction = " + data + " AND turn = 0";
-                    databaseConnection.connection.query(queryPromptTextOnly, function (err, resultP) {
-                        if (err) {
-                            return 0
-                        }
-                        io.sockets.to(data).emit('text', { text: resultP[0].text })
-                        io.sockets.to(data).emit('img', {img: resultP[0].img});
-                        counter = resultP[0].time;
-                        io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
-                    });
-                    break;
-
-                case "Votes":
-                    let queryPromptVotes = "SELECT id,text,img,time FROM " + result[0].type + " WHERE idInteraction = " + data + " AND turn = 0";
-                    databaseConnection.connection.query(queryPromptVotes, function (err, resultP) {
-                        if (err) {
-                            return 0
-                        }
-                        io.sockets.to(data).emit('text', { text: resultP[0].text })
-                        io.sockets.to(data).emit('img', {img: resultP[0].img});
-                        counter = resultP[0].time;
-                        io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
-                    });
-                    break;
-
-                case "MultipleOptions":
-                    let queryPromptMO = "SELECT id,text,img,time,option_1,option_2,option_3,option_4,option_correct FROM MultipleOptions WHERE idInteraction = " + data + " AND turn = 0";
-                    databaseConnection.connection.query(queryPromptMO, function (err, resultP) {
-                        if (err) {
-                            return 0
-                        }
-                        io.sockets.to(data).emit('text', { text: resultP[0].text })
-                        io.sockets.to(data).emit('img', {img: resultP[0].img});
-                        counter = resultP[0].time;
-                        io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
-                        io.sockets.to(data).emit('option_1', { option_1: resultP[0].option_1 })
-                        io.sockets.to(data).emit('option_2', { option_2: resultP[0].option_2 })
-                        io.sockets.to(data).emit('option_3', { option_3: resultP[0].option_3 })
-                        io.sockets.to(data).emit('option_4', { option_4: resultP[0].option_4 })
-                        io.sockets.to(data).emit('option_correct', { option_correct: resultP[0].option_correct })
-                    });
-                    break;
-                default:
-                // code default
-            }
-            turnIndex += 1;
-        });
+            var waiting = 0
 
 
-        var countdown = setInterval(function () {
-            var x = setInterval(function() {
-                io.sockets.to(data).emit('text', { text: "..." })
-            }, 3000);
-            counter--;
 
-            io.sockets.to(data).emit('timer', { timer: counter + 1 })
+            let query = "SELECT total_prompts,host_user,players_number FROM Interactions WHERE id = " + data;
+            databaseConnection.connection.query(query, function (err, result) {
+                if (err) {
+                    return 0
+                }
+                io.sockets.to(data).emit('host_user', { host_user: result[0].host_user });
+                io.sockets.to(data).emit('players_number', { players_number: result[0].players_number });
+                let number = JSON.stringify(result[0].total_prompts)
+                totalPrompts = result[0].total_prompts
+                return number
+            });
+            let queryOrder = "SELECT idPrompt,type FROM Paika.Order WHERE idInteraction = " + data + " AND turn = 0";
+            databaseConnection.connection.query(queryOrder, function (err, result) {
+                if (err) {
+                    return 0
+                }
 
 
-            if (counter == 0) {
-                if (turnIndex == totalPrompts) {
-                    clearInterval(countdown)
-                    io.sockets.to(data).emit('finish', { finish: 1 })
-                    io.sockets.to(data).emit('text', { text: "Winner is " })
-                  
-                    
-                } else {
-                i++;
-                let queryOrder = "SELECT idPrompt,type FROM Paika.Order WHERE idInteraction = " + data + " AND turn = " + turnIndex;
-                databaseConnection.connection.query(queryOrder, function (err, result) {
-                    if (err) {
-                        //finishInteraction = true
+                io.sockets.to(data).emit('turn', turnIndex);
+                io.sockets.to(data).emit('totalPrompts', totalPrompts);
+
+                switch (result[0].type) {
+                    case "TextOnly":
+                        let queryPromptTextOnly = "SELECT id,text,img,time FROM " + result[0].type + " WHERE idInteraction = " + data + " AND turn = 0";
+                        databaseConnection.connection.query(queryPromptTextOnly, function (err, resultP) {
+                            if (err) {
+                                return 0
+                            }
+                            io.sockets.to(data).emit('text', { text: resultP[0].text })
+                            io.sockets.to(data).emit('img', { img: resultP[0].img });
+                            counter = resultP[0].time;
+                            io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
+                        });
+                        break;
+
+                    case "Votes":
+                        let queryPromptVotes = "SELECT id,text,img,time FROM " + result[0].type + " WHERE idInteraction = " + data + " AND turn = 0";
+                        databaseConnection.connection.query(queryPromptVotes, function (err, resultP) {
+                            if (err) {
+                                return 0
+                            }
+                            io.sockets.to(data).emit('text', { text: resultP[0].text })
+                            io.sockets.to(data).emit('img', { img: resultP[0].img });
+                            counter = resultP[0].time;
+                            io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
+                        });
+                        break;
+
+                    case "MultipleOptions":
+                        let queryPromptMO = "SELECT id,text,img,time,option_1,option_2,option_3,option_4,option_correct FROM MultipleOptions WHERE idInteraction = " + data + " AND turn = 0";
+                        databaseConnection.connection.query(queryPromptMO, function (err, resultP) {
+                            if (err) {
+                                return 0
+                            }
+                            io.sockets.to(data).emit('text', { text: resultP[0].text })
+                            io.sockets.to(data).emit('img', { img: resultP[0].img });
+                            counter = resultP[0].time;
+                            io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
+                            io.sockets.to(data).emit('option_1', { option_1: resultP[0].option_1 })
+                            io.sockets.to(data).emit('option_2', { option_2: resultP[0].option_2 })
+                            io.sockets.to(data).emit('option_3', { option_3: resultP[0].option_3 })
+                            io.sockets.to(data).emit('option_4', { option_4: resultP[0].option_4 })
+                            io.sockets.to(data).emit('option_correct', { option_correct: resultP[0].option_correct })
+                        });
+                        break;
+                    default:
+                    // code default
+                }
+                turnIndex += 1;
+            });
+
+
+            var countdown = setInterval(function () {
+                var x = setInterval(function () {
+                    io.sockets.to(data).emit('text', { text: "..." })
+                }, 3000);
+                counter--;
+
+                io.sockets.to(data).emit('timer', { timer: counter + 1 })
+
+
+                if (counter == 0) {
+                    if (turnIndex == totalPrompts) {
+                        clearInterval(countdown)
+                        io.sockets.to(data).emit('finish', { finish: 1 })
+                        io.sockets.to(data).emit('text', { text: "Winner is " })
+
+
+                    } else {
+                        i++;
+                        let queryOrder = "SELECT idPrompt,type FROM Paika.Order WHERE idInteraction = " + data + " AND turn = " + turnIndex;
+                        databaseConnection.connection.query(queryOrder, function (err, result) {
+                            if (err) {
+                                //finishInteraction = true
+                            }
+
+
+
+
+                            io.sockets.to(data).emit('turn', turnIndex);
+                            io.sockets.to(data).emit('totalPrompts', totalPrompts);
+                            io.sockets.to(data).emit('type', { type: result[0].type });
+                            switch (result[0].type) {
+                                case "TextOnly":
+                                    let queryPromptTextOnly = "SELECT id,text,img,time FROM TextOnly WHERE idInteraction = " + data + " AND turn = " + turnIndex;
+                                    databaseConnection.connection.query(queryPromptTextOnly, function (err, resultP) {
+                                        if (err) {
+                                            return 0
+                                        }
+                                        io.sockets.to(data).emit('text', { text: resultP[0].text })
+                                        io.sockets.to(data).emit('img', { img: resultP[0].img });
+                                        counter = resultP[0].time;
+                                        io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
+                                        turnIndex += 1;
+                                    });
+                                    break;
+
+                                case "Votes":
+                                    let queryPromptVotes = "SELECT id,text,img,time FROM Votes WHERE idInteraction = " + data + " AND turn = " + turnIndex;
+                                    databaseConnection.connection.query(queryPromptVotes, function (err, resultP) {
+                                        if (err) {
+                                            return 0
+                                        }
+                                        io.sockets.to(data).emit('text', { text: resultP[0].text })
+                                        io.sockets.to(data).emit('img', { img: resultP[0].img });
+                                        counter = resultP[0].time;
+                                        io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
+                                        turnIndex += 1;
+                                    });
+                                    break;
+
+                                case "MultipleOptions":
+                                    let queryPromptMO = "SELECT id,text,img,time,option_1,option_2,option_3,option_4,option_correct FROM MultipleOptions WHERE idInteraction = " + data + " AND turn = " + turnIndex;
+                                    databaseConnection.connection.query(queryPromptMO, function (err, resultP) {
+                                        if (err) {
+                                            return 0
+                                        }
+                                        io.sockets.to(data).emit('text', { text: resultP[0].text })
+                                        io.sockets.to(data).emit('img', { img: resultP[0].img });
+                                        counter = resultP[0].time;
+                                        io.sockets.to(data).emit('option_1', { option_1: resultP[0].option_1 })
+                                        io.sockets.to(data).emit('option_2', { option_2: resultP[0].option_2 })
+                                        io.sockets.to(data).emit('option_3', { option_3: resultP[0].option_3 })
+                                        io.sockets.to(data).emit('option_4', { option_4: resultP[0].option_4 })
+                                        io.sockets.to(data).emit('option_correct', { option_correct: resultP[0].option_correct })
+                                        turnIndex += 1;
+                                    });
+                                    break;
+                                default:
+                                // code default
+                            }
+                        });
                     }
 
 
-                        
+                    if (finishInteraction) {
+                        clearInterval(countdown)
+                        io.sockets.to(data).emit('finish', { finish: 1 })
 
-                        io.sockets.to(data).emit('turn', turnIndex);
-                        io.sockets.to(data).emit('totalPrompts', totalPrompts);
-                        io.sockets.to(data).emit('type', { type: result[0].type });
-                        switch (result[0].type) {
-                            case "TextOnly":
-                                let queryPromptTextOnly = "SELECT id,text,img,time FROM TextOnly WHERE idInteraction = " + data + " AND turn = " + turnIndex;
-                                databaseConnection.connection.query(queryPromptTextOnly, function (err, resultP) {
-                                    if (err) {
-                                        return 0
-                                    }
-                                    io.sockets.to(data).emit('text', { text: resultP[0].text })
-                                    io.sockets.to(data).emit('img', {img: resultP[0].img});
-                                    counter = resultP[0].time;
-                                    io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
-                                    turnIndex += 1;
-                                });
-                                break;
+                    }
 
-                            case "Votes":
-                                let queryPromptVotes = "SELECT id,text,img,time FROM Votes WHERE idInteraction = " + data + " AND turn = " + turnIndex;
-                                databaseConnection.connection.query(queryPromptVotes, function (err, resultP) {
-                                    if (err) {
-                                        return 0
-                                    }
-                                    io.sockets.to(data).emit('text', { text: resultP[0].text })
-                                    io.sockets.to(data).emit('img', {img: resultP[0].img});
-                                    counter = resultP[0].time;
-                                    io.sockets.to(data).emit('totalTimer', { totalTimer: resultP[0].time })
-                                    turnIndex += 1;
-                                });
-                                break;
-
-                            case "MultipleOptions":
-                                let queryPromptMO = "SELECT id,text,img,time,option_1,option_2,option_3,option_4,option_correct FROM MultipleOptions WHERE idInteraction = " + data + " AND turn = " + turnIndex;
-                                databaseConnection.connection.query(queryPromptMO, function (err, resultP) {
-                                    if (err) {
-                                        return 0
-                                    }
-                                    io.sockets.to(data).emit('text', { text: resultP[0].text })
-                                    io.sockets.to(data).emit('img', {img: resultP[0].img});
-                                    counter = resultP[0].time;
-                                    io.sockets.to(data).emit('option_1', { option_1: resultP[0].option_1 })
-                                    io.sockets.to(data).emit('option_2', { option_2: resultP[0].option_2 })
-                                    io.sockets.to(data).emit('option_3', { option_3: resultP[0].option_3 })
-                                    io.sockets.to(data).emit('option_4', { option_4: resultP[0].option_4 })
-                                    io.sockets.to(data).emit('option_correct', { option_correct: resultP[0].option_correct })
-                                    turnIndex += 1;
-                                });
-                                break;
-                            default:
-                            // code default
-                        }
-                });
                 }
-                
-
-                if (finishInteraction) {
-                    clearInterval(countdown)
-                    io.sockets.to(data).emit('finish', { finish: 1 })
-                    
-                }
-
-            }
-        }, 1000);
-        console.log("start")
+            }, 1000);
+            console.log("start")
         }
-        else{
+        else {
             console.log("Ya se ha iniciado la interaccion: " + data)
         }
     });
