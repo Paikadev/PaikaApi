@@ -258,7 +258,7 @@ io.sockets.on('connection', function (socket) {
         sdk.auth(tokenApi);
 
         sdk.startRts({
-            layoutUrl: 'https://main--boisterous-gumdrop-35c313.netlify.app/'
+            layoutUrl: 'http://13.52.68.186/'
         }, { conference_id: data['id_conference'] })
             .then(({ data }) => response = data)
             .catch(err => console.error(err));
