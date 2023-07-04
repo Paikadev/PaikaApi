@@ -14,6 +14,9 @@ var routerMultipleOptions = require("./Routes/multipleOtions.router");
 const bodyParser = require('body-parser');
 const dolbyio = require('@dolbyio/dolbyio-rest-apis-client');
 const databaseConnection = require('./database/connection')
+const mysql = require('mysql')
+
+
 
 var votesController = require('./Controllers/votes.controller')
 var multipleOptionsController = require('./Controllers/multipleOptions.controller')
@@ -28,10 +31,9 @@ var interactionsController = require('./Controllers/interactions.controller')
 //app.use('/multipleOptions', routerMultipleOptions);
 
 
-const options = {
-    key: fs.readFileSync('certificates/key.pem'),
-    cert: fs.readFileSync('certificates/cert.pem')
-}
+
+const APP_KEY = 'r4jNvxc-zFCrHySvhtw3VA==';
+const APP_SECRET = 'eP-HH8T6vHF4RaHJEP8oR3ipwF_16YeUVvSJ-FDek-M=';
 
 
 app.use(bodyParser.json());
@@ -42,7 +44,7 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE');
     res.setHeader('Access-Control-Allow-Methods', 'Content-Type', 'Authorization');
     next();
-})
+});
 
 app.get("/", (req, res) => {
     res.send("Paika API v1.0")
@@ -50,21 +52,24 @@ app.get("/", (req, res) => {
 
 app.get("/getAceessToken", (req, res) => {
     interactionsController.getAceessToken(req, res);
-})
+});
 
 app.post("/startStream", (req, res) => {
     interactionsController.startStream(req, res);
-})
+});
 
 app.post("/interaction", (req, res) => {
     interactionsController.insert(req, res)
 });
+
 app.post("/stream", (req, res) => {
     interactionsController.insertStreams(req, res)
 });
+
 app.get("/interactions", (req, res) => {
     interactionsController.read(req, res)
 });
+
 app.get("/Streams", (req, res) => {
     interactionsController.readStreams(req, res)
 });
@@ -124,17 +129,14 @@ app.use('/image', express.static(staticRoute));
 app.use(express.static(path.join(__dirname, 'public')));
 
 
-https
-  .createServer(options,app)
-  .listen(443, ()=>{
-    console.log('server is runing at port 443')
-  });
+const server = app.listen(9000, () => {
+    console.log("Listening on port: " + 9000);
+    databaseConnection.connectionToDatabase();
+});
 
 
 
-
-
-var io = require("socket.io")(https, {
+var io = require("socket.io")(server, {
     cors: {
         origin: "*",
         methods: ["GET", "POST"]
@@ -151,14 +153,14 @@ io.sockets.on('connection', function (socket) {
     console.log('Connect: %s sockets are connected', connections.length);
 
     datos = {
-        "img": img,
+        "img": "img",
         "name": "Lalo Paika",
         "description": "this is test a sh hs",
         "rtmpUrl": "https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4",
         "recordpUrl": "(user2Count * 100) / totalVotes,",
         "live": true,
         "totalViewers": 100,
-        
+
     }
 
     io.sockets.emit('streamList', datos);
@@ -172,13 +174,25 @@ io.sockets.on('connection', function (socket) {
         console.log(data)
         io.sockets.emit('iOS Client Port', { msg: 'Hi iOS Client' })
     })
-
+    var totalUsers = 0;
     socket.on('join', function (idRoom) {
-        var totalUsers = 0;
+        
         console.log('joining room', idRoom);
         socket.join(idRoom);
-        totalUsers++;
+        totalUsers+1;
         io.sockets.to(idRoom).emit('totalUser', { totalUsers: totalUsers });
+    });
+
+    socket.on('get_interaction_id', function (idConference) {
+        let query = 'SELECT idInteraction FROM Streams WHERE idConference = "' + idConference + '"';
+        databaseConnection.connection.query(query, function (err, result) {
+            if (err) {
+              
+            }
+            //return res.json(result)
+            io.sockets.emit('set_interaction_id', { id: result });
+          });
+        
     });
 
     socket.on('leave', function (idRoom) {
@@ -187,6 +201,67 @@ io.sockets.on('connection', function (socket) {
         socket.leave(idRoom);
         console.log("User leave room")
         io.sockets.to(idRoom).emit('finish_socket', { finish: true });
+    });
+
+    socket.on('total_user_mixer', function (idRoom) {
+        io.socketsLeave(idRoom);
+        socket.leave(socket.current_room);
+        socket.leave(idRoom);
+        console.log("User leave room")
+        io.sockets.to(idRoom).emit('finish_socket', { finish: true });
+    });
+
+    socket.on('initial_data', function (data) {
+
+        const currentDate = new Date();
+
+        const year = currentDate.getFullYear();
+        const month = String(currentDate.getMonth() + 1).padStart(2, '0'); // El mes está basado en cero, por lo que se suma 1 y se rellena con ceros si es necesario.
+        const day = String(currentDate.getDate()).padStart(2, '0'); // Se rellena con ceros si es necesario.
+        const hour = String(currentDate.getHours()).padStart(2, '0');
+        const minute = String(currentDate.getMinutes()).padStart(2, '0');
+        const second = String(currentDate.getSeconds()).padStart(2, '0');
+
+        const formattedDate = `${year}-${month}-${day}`;
+        const formattedTime = `${hour}:${minute}:${second}`
+
+        const horaFecha = formattedDate + formattedTime;
+
+        let insertQuery = "INSERT INTO Streams (name,description,total_viewers,url_live,url_record,live,img,idInteraction,idConference,subscribeToken) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
+        let query = mysql.format(insertQuery, [horaFecha, "", 10, "", true, "", "", data['id_interaction'], data['id_conference'], ""])
+        databaseConnection.connection.query(query, function (err, result) {
+            if (err) {
+                console.log('Error create stream')
+
+            }
+            console.log("Initial data success")
+        });
+
+        console.log("InitialData:")
+        console.log(data)
+        const sdkToken = require('api')('@communications-apis/v1.4.9#1dfatt2fmlesv8nwn');
+
+        var tokenApi = ""
+
+        var response = ""
+
+        sdkToken.auth('r4jNvxc-zFCrHySvhtw3VA==', 'eP-HH8T6vHF4RaHJEP8oR3ipwF_16YeUVvSJ-FDek-M=');
+         sdkToken.getApiToken({ grant_type: 'client_credentials' }, {
+            accept: 'application/json',
+            'cache-control': 'no-cache'
+        })
+            .then(({ data }) => tokenApi = data['access_token'])
+            .catch(err => console.error(err));
+
+        const sdk = require('api')('@communications-apis/v1.4.9#hgralehnmhj4');
+
+        sdk.auth(tokenApi);
+
+        sdk.startRts({
+            layoutUrl: 'https://main--boisterous-gumdrop-35c313.netlify.app/'
+        }, { conference_id: data['id_conference'] })
+            .then(({ data }) => response = data)
+            .catch(err => console.error(err));
     });
 
     socket.on('points', function (data) {
