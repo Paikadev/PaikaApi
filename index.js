@@ -295,6 +295,10 @@ io.sockets.on('connection', function (socket) {
     user4Count = 0.0;
     user5Name = "";
 
+    socket.on('chat message', (message) => {
+        io.emit('chat message', message); // Emitir el mensaje a todos los usuarios conectados
+      });
+
     socket.on('vote_user', function (data) {
         console.log("Entro a votos")
         let idInteraction = JSON.stringify(data['id_interaction']);
