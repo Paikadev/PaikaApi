@@ -279,6 +279,12 @@ io.sockets.on('connection', function (socket) {
         io.sockets.to(idInteraction).emit('points_update', data);
     });
 
+    socket.on('json_players_mixer', function (data) {
+        console.log("Entro a players")
+        let idInteraction = JSON.stringify(data['id_interaction']);
+        io.sockets.to(idInteraction).emit('json_players_mixer', data);
+    });
+
     socket.on('option_user', function (data) {
         console.log("Entro a points")
         let idInteraction = JSON.stringify(data['id_interaction']);
