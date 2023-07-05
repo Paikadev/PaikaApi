@@ -176,10 +176,10 @@ io.sockets.on('connection', function (socket) {
     })
     var totalUsers = 0;
     socket.on('join', function (idRoom) {
-        
+
         console.log('joining room', idRoom);
         socket.join(idRoom);
-        totalUsers+1;
+        totalUsers + 1;
         io.sockets.to(idRoom).emit('totalUser', { totalUsers: totalUsers });
     });
 
@@ -187,12 +187,12 @@ io.sockets.on('connection', function (socket) {
         let query = 'SELECT idInteraction FROM Streams WHERE idConference = "' + idConference + '"';
         databaseConnection.connection.query(query, function (err, result) {
             if (err) {
-              
+
             }
             //return res.json(result)
             io.sockets.emit('set_interaction_id', { id: result });
-          });
-        
+        });
+
     });
 
     socket.on('leave', function (idRoom) {
@@ -246,7 +246,7 @@ io.sockets.on('connection', function (socket) {
         var response = ""
 
         sdkToken.auth('r4jNvxc-zFCrHySvhtw3VA==', 'eP-HH8T6vHF4RaHJEP8oR3ipwF_16YeUVvSJ-FDek-M=');
-         sdkToken.getApiToken({ grant_type: 'client_credentials' }, {
+        sdkToken.getApiToken({ grant_type: 'client_credentials' }, {
             accept: 'application/json',
             'cache-control': 'no-cache'
         })
@@ -256,6 +256,10 @@ io.sockets.on('connection', function (socket) {
         const sdk = require('api')('@communications-apis/v1.4.9#hgralehnmhj4');
 
         sdk.auth(tokenApi);
+
+        sdk.apiRecordingStart({ conference_id: data['id_conference'] })
+            .then(({ data }) => console.log(data))
+            .catch(err => console.error(err));
 
         sdk.startRts({
             layoutUrl: 'http://13.52.68.186/'
@@ -297,7 +301,11 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('chat message', (message) => {
         io.emit('chat message', message); // Emitir el mensaje a todos los usuarios conectados
-      });
+    });
+
+    socket.on('mixer_players_total', (message) => {
+        io.emit('mixer_players_total', message); // Emitir el mensaje a todos los usuarios conectados
+    });
 
     socket.on('vote_user', function (data) {
         console.log("Entro a votos")
