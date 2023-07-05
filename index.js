@@ -303,8 +303,8 @@ io.sockets.on('connection', function (socket) {
         io.emit('chat message', message); // Emitir el mensaje a todos los usuarios conectados
     });
 
-    socket.on('mixer_players_total', (message) => {
-        io.emit('mixer_players_total', message); // Emitir el mensaje a todos los usuarios conectados
+    socket.on('mixer_players_total_socket', (message) => {
+        io.emit('mixer_players_total_socket', message); // Emitir el mensaje a todos los usuarios conectados
     });
 
     socket.on('vote_user', function (data) {
