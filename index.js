@@ -184,6 +184,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('get_interaction_id', function (idConference) {
+        console("Obteniendo conferencia para: " + idConference)
         let query = 'SELECT idInteraction FROM Streams WHERE idConference = "' + idConference + '"';
         databaseConnection.connection.query(query, function (err, result) {
             if (err) {
