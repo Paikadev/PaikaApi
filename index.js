@@ -221,11 +221,11 @@ io.sockets.on('connection', function (socket) {
 
         sdk.auth("eyJ0eXAiOiJKV1QiLCJraWQiOiI1ODExQjE0RS1DQzVCLTQ4QkQtQTNEOC1DREQxQzUzQ0ZDNUMiLCJhbGciOiJSUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4ODYzOTcwMSwic3ViIjoicjRqTnZ4Yy16RkNySHlTdmh0dzNWQT09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJhcGkiLCJvaWQiOiIzYzJiYzdjYy1iNmU3LTRlZTQtYWJiYi00OWEzOGEwNGQ4YjMiLCJhaWQiOiI4MjliMzMxNi0yOWJlLTQ4OGYtYjE5OS0wN2Y2ZDQ1YmMzODQiLCJiaWQiOiI4YTM2OWMzYzg3ZWMxNzI2MDE4N2VmZjc3ODE0NDY5NSIsImV4cCI6MTY4ODY0MTUwMX0.T0LKYMGcWQS95NCpg1NmIhVH92jBWNA1Cb87aPhb8Gwj603ibcDQ2LssIERV3YJEYBpNQc42UF6YWQ4d0C9HKA50qDL69URn9mtm1LrE5QbacMNH1noWXXvxRWwmbXLsy3_p8azs2BKamoDGcOB49BVjG3bNEV2bzOSu5-Q8gJFRUSBCgkuGOCINE15-LXgEWWRsQYLdG07TqldyFs35P7hGHBOaXnOJBop87aEqEiNZn8pA70qa3PZWKWhs4smfQYpfhh2OZmQMxmNX6PtLbctK-L-c3DXKxDcf6kRGjTiCi8BG0pnPw60F9NJYHKTqJbtnNWvnP5ZEKAtufibstC3Jqk9_bUZze-faUehLpjbBxCjo-PB04CzVfJQQfVMb8gaBFLX_j-opJgqltPTfRVsyfgMnKkt-ZfMNonNl2e3t-o-66HzGaH-NBQ09U1H353POo4BqageAbEoaleNbIeATb60JZqegFDzYh6iwHRRzxCSBSsMnxzLtRP78XNFzjBbgMKH9QSAYInABfdkq0YuHGk-Y2AvL9FieTadV__U5E6mNyLBi37vlwJoyENeI6Oua5lVZ3Sr0jmKPwp4xvdfDHU37TREgUyzzzwyjxn_PXcW7gdbbFKHL8EMZwPM47T0NTg4oRBXSyb_xGVmxTyFe5AhllpRqxen-EWwcZfw");
 
-        sdk.apiRecordingStart({ layoutUrl: 'http://13.52.68.186/' }, {
-            conference_id: idConference
-        })
-            .then(({ datos }) => console.log(datos))
-            .catch(err => console.error(err));
+        //sdk.apiRecordingStart({ layoutUrl: 'http://13.52.68.186/' }, {
+          //  conference_id: idConference
+        //})
+         //   .then(({ datos }) => console.log(datos))
+           // .catch(err => console.error(err));
 
         const currentDate = new Date();
 
