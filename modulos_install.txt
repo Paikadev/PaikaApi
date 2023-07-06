@@ -1,4 +1,4 @@
-npm i npm i -S body-parser mysql express cors multer  socket.io @dolbyio/dolbyio-rest-apis-client fs https
+npm i npm i -S body-parser mysql express cors multer api  socket.io @dolbyio/dolbyio-rest-apis-client fs https
 npm install nodemon -g
 npm i socket.io
 

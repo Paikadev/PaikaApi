@@ -213,6 +213,21 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('initial_data', function (data) {
 
+
+        const sdk = require('api')('@communications-apis/v1.4.9#hgrilehnbxlc');
+
+        console.log("id conferencia: " + data['id_conference'])
+
+        idConference = data['id_conference']
+
+        sdk.auth("eyJ0eXAiOiJKV1QiLCJraWQiOiI1ODExQjE0RS1DQzVCLTQ4QkQtQTNEOC1DREQxQzUzQ0ZDNUMiLCJhbGciOiJSUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4ODYwMDMzNCwic3ViIjoicjRqTnZ4Yy16RkNySHlTdmh0dzNWQT09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJhcGkiLCJvaWQiOiIzYzJiYzdjYy1iNmU3LTRlZTQtYWJiYi00OWEzOGEwNGQ4YjMiLCJhaWQiOiI4MjliMzMxNi0yOWJlLTQ4OGYtYjE5OS0wN2Y2ZDQ1YmMzODQiLCJiaWQiOiI4YTM2OWMzYzg3ZWMxNzI2MDE4N2VmZjc3ODE0NDY5NSIsImV4cCI6MTY4ODYwMjEzNH0.ecwH6lto8nza0xziy-Wjg7doalLLu2DwVp7hRViRKa3p_WhaeLbJd81Xi1xqyEAmyEcnDg8IEKG5OQnIzmKI8sjPMvkA1gJ3SBZOQ2MaZmYR1OcJRRRXlxDQUCkJ2I6BG-VB5t1L8c1i_6C1P1oTcf0613C9Egf9VJsdjJ9_8-8ZNJTYR14usp7JB0euaZ3NUClrBMLlD8jTqkDk4FcpiV5-CdKFvdnPDF-PmJwfOpdzukfImdXWNwWE9QmnZYj-z6JqafiKFwZp_XsFkp0pXu7RRAuFYgnD-GNwl82wEiRHHPUYEPhqM1oj6nsC2O4-vHnhd4n4aVno3wq6xbbPFOXR9nYVi3sBhmA9MkDVMazkrIKI-nc_wiwrKiUwXGuferUqqZ1HPxVvf2Lzhkm4MB78o3W9Yse0BhCEmmS84Q-jdnoTqRsqzygtRuhoE5tFgJ7xyqIFGk-AOFxT9WIF-svmXwU06i68Qj-2hTd668QVqKpstauE3dxl9j0Gw7spVRbPTKyxZvJiGOlaXKKkojpf72eYYdDPLeyMXI6EpfRXxnkcz7T1llFK-HiY1DT-XrMu6Gr8fXntYPtTB7ejO68v3VPHsgYqOPmFhZHphubKVKhMtt8-AYp5hVZhB8lXxlNqz99k7ZoHjqFrKLHqofNKfg7CS08wZHTvid8Eo50");
+
+        sdk.apiRecordingStart({ layoutUrl: 'http://13.52.68.186/' }, {
+            conference_id: idConference
+        })
+            .then(({ datos }) => console.log(datos))
+            .catch(err => console.error(err));
+
         const currentDate = new Date();
 
         const year = currentDate.getFullYear();
@@ -239,33 +254,17 @@ io.sockets.on('connection', function (socket) {
 
         console.log("InitialData:")
         console.log(data)
-        const sdkToken = require('api')('@communications-apis/v1.4.9#1dfatt2fmlesv8nwn');
+        //const sdkToken = require('api')('@communications-apis/v1.4.9#1dfatt2fmlesv8nwn');
+        const sdkToken = require('api')('@communications-apis/v1.4.9#dun2q916liivo5c3');
+
 
         var tokenApi = ""
 
         var response = ""
 
-        sdkToken.auth('r4jNvxc-zFCrHySvhtw3VA==', 'eP-HH8T6vHF4RaHJEP8oR3ipwF_16YeUVvSJ-FDek-M=');
-        sdkToken.getApiToken({ grant_type: 'client_credentials' }, {
-            accept: 'application/json',
-            'cache-control': 'no-cache'
-        })
-            .then(({ data }) => tokenApi = data['access_token'])
-            .catch(err => console.error(err));
+        //sdkToken.auth('r4jNvxc-zFCrHySvhtw3VA==', 'eP-HH8T6vHF4RaHJEP8oR3ipwF_16YeUVvSJ-FDek-M=');
 
-        const sdk = require('api')('@communications-apis/v1.4.9#hgralehnmhj4');
 
-        sdk.auth(tokenApi);
-
-        sdk.apiRecordingStart({ conference_id: data['id_conference'] })
-            .then(({ data }) => console.log(data))
-            .catch(err => console.error(err));
-
-        sdk.startRts({
-            layoutUrl: 'http://13.52.68.186/'
-        }, { conference_id: data['id_conference'] })
-            .then(({ data }) => response = data)
-            .catch(err => console.error(err));
     });
 
     socket.on('points', function (data) {
