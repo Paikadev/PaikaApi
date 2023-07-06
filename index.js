@@ -190,7 +190,8 @@ io.sockets.on('connection', function (socket) {
 
             }
             //return res.json(result)
-            io.sockets.emit('set_interaction_id', { id: result });
+            console.log(result)
+            io.sockets.emit('set_interaction_id', { result });
         });
 
     });
