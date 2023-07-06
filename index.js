@@ -312,7 +312,7 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('mixer_players_total_socket', (message) => {
         let idInteraction = JSON.stringify(message['id_interaction']);
-        io.sockets.to(idInteraction).emit('json_players_mixer', message);
+        io.sockets.to(idInteraction).emit('mixer_players_total_socket', message);
     });
 
 
