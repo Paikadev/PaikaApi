@@ -205,12 +205,9 @@ io.sockets.on('connection', function (socket) {
         io.sockets.to(idRoom).emit('finish_socket', { finish: true });
     });
 
-    socket.on('total_user_mixer', function (idRoom) {
-        io.socketsLeave(idRoom);
-        socket.leave(socket.current_room);
-        socket.leave(idRoom);
-        console.log("User leave room")
-        io.sockets.to(idRoom).emit('finish_socket', { finish: true });
+    socket.on('total_user_mixer', function (data) {
+       
+        io.sockets.to(data['id']).emit('total_user_mixer', { finish: true });
     });
 
     socket.on('initial_data', function (data) {
@@ -222,7 +219,7 @@ io.sockets.on('connection', function (socket) {
 
         idConference = data['id_conference']
 
-        sdk.auth("eyJ0eXAiOiJKV1QiLCJraWQiOiI1ODExQjE0RS1DQzVCLTQ4QkQtQTNEOC1DREQxQzUzQ0ZDNUMiLCJhbGciOiJSUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4ODYwMDMzNCwic3ViIjoicjRqTnZ4Yy16RkNySHlTdmh0dzNWQT09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJhcGkiLCJvaWQiOiIzYzJiYzdjYy1iNmU3LTRlZTQtYWJiYi00OWEzOGEwNGQ4YjMiLCJhaWQiOiI4MjliMzMxNi0yOWJlLTQ4OGYtYjE5OS0wN2Y2ZDQ1YmMzODQiLCJiaWQiOiI4YTM2OWMzYzg3ZWMxNzI2MDE4N2VmZjc3ODE0NDY5NSIsImV4cCI6MTY4ODYwMjEzNH0.ecwH6lto8nza0xziy-Wjg7doalLLu2DwVp7hRViRKa3p_WhaeLbJd81Xi1xqyEAmyEcnDg8IEKG5OQnIzmKI8sjPMvkA1gJ3SBZOQ2MaZmYR1OcJRRRXlxDQUCkJ2I6BG-VB5t1L8c1i_6C1P1oTcf0613C9Egf9VJsdjJ9_8-8ZNJTYR14usp7JB0euaZ3NUClrBMLlD8jTqkDk4FcpiV5-CdKFvdnPDF-PmJwfOpdzukfImdXWNwWE9QmnZYj-z6JqafiKFwZp_XsFkp0pXu7RRAuFYgnD-GNwl82wEiRHHPUYEPhqM1oj6nsC2O4-vHnhd4n4aVno3wq6xbbPFOXR9nYVi3sBhmA9MkDVMazkrIKI-nc_wiwrKiUwXGuferUqqZ1HPxVvf2Lzhkm4MB78o3W9Yse0BhCEmmS84Q-jdnoTqRsqzygtRuhoE5tFgJ7xyqIFGk-AOFxT9WIF-svmXwU06i68Qj-2hTd668QVqKpstauE3dxl9j0Gw7spVRbPTKyxZvJiGOlaXKKkojpf72eYYdDPLeyMXI6EpfRXxnkcz7T1llFK-HiY1DT-XrMu6Gr8fXntYPtTB7ejO68v3VPHsgYqOPmFhZHphubKVKhMtt8-AYp5hVZhB8lXxlNqz99k7ZoHjqFrKLHqofNKfg7CS08wZHTvid8Eo50");
+        sdk.auth("eyJ0eXAiOiJKV1QiLCJraWQiOiI1ODExQjE0RS1DQzVCLTQ4QkQtQTNEOC1DREQxQzUzQ0ZDNUMiLCJhbGciOiJSUzUxMiJ9.eyJpc3MiOiJkb2xieS5pbyIsImlhdCI6MTY4ODYzOTcwMSwic3ViIjoicjRqTnZ4Yy16RkNySHlTdmh0dzNWQT09IiwiYXV0aG9yaXRpZXMiOlsiUk9MRV9DVVNUT01FUiJdLCJ0YXJnZXQiOiJhcGkiLCJvaWQiOiIzYzJiYzdjYy1iNmU3LTRlZTQtYWJiYi00OWEzOGEwNGQ4YjMiLCJhaWQiOiI4MjliMzMxNi0yOWJlLTQ4OGYtYjE5OS0wN2Y2ZDQ1YmMzODQiLCJiaWQiOiI4YTM2OWMzYzg3ZWMxNzI2MDE4N2VmZjc3ODE0NDY5NSIsImV4cCI6MTY4ODY0MTUwMX0.T0LKYMGcWQS95NCpg1NmIhVH92jBWNA1Cb87aPhb8Gwj603ibcDQ2LssIERV3YJEYBpNQc42UF6YWQ4d0C9HKA50qDL69URn9mtm1LrE5QbacMNH1noWXXvxRWwmbXLsy3_p8azs2BKamoDGcOB49BVjG3bNEV2bzOSu5-Q8gJFRUSBCgkuGOCINE15-LXgEWWRsQYLdG07TqldyFs35P7hGHBOaXnOJBop87aEqEiNZn8pA70qa3PZWKWhs4smfQYpfhh2OZmQMxmNX6PtLbctK-L-c3DXKxDcf6kRGjTiCi8BG0pnPw60F9NJYHKTqJbtnNWvnP5ZEKAtufibstC3Jqk9_bUZze-faUehLpjbBxCjo-PB04CzVfJQQfVMb8gaBFLX_j-opJgqltPTfRVsyfgMnKkt-ZfMNonNl2e3t-o-66HzGaH-NBQ09U1H353POo4BqageAbEoaleNbIeATb60JZqegFDzYh6iwHRRzxCSBSsMnxzLtRP78XNFzjBbgMKH9QSAYInABfdkq0YuHGk-Y2AvL9FieTadV__U5E6mNyLBi37vlwJoyENeI6Oua5lVZ3Sr0jmKPwp4xvdfDHU37TREgUyzzzwyjxn_PXcW7gdbbFKHL8EMZwPM47T0NTg4oRBXSyb_xGVmxTyFe5AhllpRqxen-EWwcZfw");
 
         sdk.apiRecordingStart({ layoutUrl: 'http://13.52.68.186/' }, {
             conference_id: idConference
