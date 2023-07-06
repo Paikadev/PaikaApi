@@ -279,7 +279,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('json_players_mixer', function (data) {
-        console.log("Entro a players")
+        
         let idInteraction = JSON.stringify(data['id_interaction']);
         io.sockets.to(idInteraction).emit('json_players_mixer', data);
     });
@@ -305,12 +305,16 @@ io.sockets.on('connection', function (socket) {
     user5Name = "";
 
     socket.on('chat message', (message) => {
-        io.emit('chat message', message); // Emitir el mensaje a todos los usuarios conectados
+        let idInteraction = JSON.stringify(message['id_interaction']);
+        idInteraction = idInteraction + "chat"
+        io.sockets.to(idInteraction).emit('chat message', message); // Emitir el mensaje a todos los usuarios conectados
     });
 
     socket.on('mixer_players_total_socket', (message) => {
-        io.emit('mixer_players_total_socket', message); // Emitir el mensaje a todos los usuarios conectados
+        let idInteraction = JSON.stringify(message['id_interaction']);
+        io.sockets.to(idInteraction).emit('json_players_mixer', message);
     });
+
 
     socket.on('vote_user', function (data) {
         console.log("Entro a votos")
