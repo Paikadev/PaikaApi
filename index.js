@@ -209,7 +209,7 @@ io.sockets.on("connection", function (socket) {
 
     sdk
       .apiRecordingStart(
-        { layoutUrl: "http://13.52.68.186/" },
+        { layoutUrl: "https://boisterous-gumdrop-35c313.netlify.app/" },
         {
           conference_id: idConference,
         }
